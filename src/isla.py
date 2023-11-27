@@ -83,6 +83,7 @@ DIMENSIONES = 5
 CELDA_TESORO = "X"
 CELDA_TRAMPA = "!"
 CELDA_VACIA = " "
+CELDA_JUGADOR = "O"
 
 # Constantes para las pistas de los movimientos
 ARRIBA = "^"
@@ -123,9 +124,9 @@ def inicializar_juego() -> tuple:
     :return: El mapa y la posición del jugador.
     """
     posicion_jugador = posicion_inicial_del_jugador()
-    mapa = generar_mapa()
+    mapa = generar_mapa(posicion_jugador)
     while mapa[posicion_jugador[FILAS]][posicion_jugador[COLUMNAS]] == CELDA_TESORO:
-        mapa = generar_mapa()
+        mapa = generar_mapa(posicion_jugador)
 
     return mapa, posicion_jugador
 
@@ -137,7 +138,7 @@ def posicion_inicial_del_jugador() -> tuple:
     return DIMENSIONES // 2, DIMENSIONES // 2
 
 
-def generar_mapa() -> list:
+def generar_mapa(posicion_jugador) -> list:
     """Genera un mapa de la isla con pistas y trampas correctamente colocadas. Con el siguiente contenido:
         - "X" indica el tesoro, y es única en el mapa.
         - "!" indica una trampa, y puede haber varias.
@@ -158,7 +159,7 @@ def generar_mapa() -> list:
     # Colocar pistas y trampas REVISAR
     for i in range(DIMENSIONES):
         for j in range(DIMENSIONES):
-            if mapa[i][j] != CELDA_TESORO:
+            if mapa[i][j] != CELDA_TESORO and (i,j) != posicion_jugador:
                 # Decidir aleatoriamente si colocar una pista, una trampa o vacia.llllll
                 opciones = [genera_pista((tesoro_x, tesoro_y), (i, j))]
                 opciones += [CELDA_TRAMPA]
@@ -276,10 +277,32 @@ def simbolo_celda(celda):
         return CELDA_VACIA 
 
 
-def imprimir_mapa_oculto(mapa: list):
+def imprimir_mapa_oculto(mapa: list, posicion_jugador):
     """Imprime el mapa sin revelar el tesoro ni las trampas."""
-    for fila in mapa:
-        print(" ".join([simbolo_celda(celda) for celda in fila]))
+
+    print("   |", end="")
+    for i in range(1, DIMENSIONES + 1):
+        print(f" {i}", end="")
+    print(" |")
+
+    print("---" * DIMENSIONES + "---")
+    
+    for fila in range(0, len(mapa)):
+        simbolos_fila = []
+        for celda in range(0, len(mapa[fila])):
+
+            if (fila, celda) == posicion_jugador:
+                simbolo = CELDA_JUGADOR
+            else:
+                simbolo = simbolo_celda(mapa[fila][celda])
+
+            simbolos_fila.append(simbolo)
+        
+        fila_formada = ' '.join(simbolos_fila)
+        
+        print(f" {fila + 1} | {fila_formada} |")
+
+    print("---" * DIMENSIONES + "---")
 
 
 def imprimir_mapa(mapa: list):
@@ -314,8 +337,9 @@ def muestra_resultado_del_movimiento(resultado: int, nueva_posicion: tuple, mapa
 def muestra_estado_mapa(mapa, posicion_jugador):
     """Muestra el mapa y la posición del jugador."""
 
-    imprimir_mapa_oculto(mapa)
-    print(f"Tu posición es {posicion_jugador}")
+    imprimir_mapa_oculto(mapa, posicion_jugador)
+    x, y = posicion_jugador
+    print(f"Tu posición es ({x+1}, {y+1})")
 
 
 def jugar():
