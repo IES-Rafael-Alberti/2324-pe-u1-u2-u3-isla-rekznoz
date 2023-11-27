@@ -74,8 +74,7 @@ Tu posición es (3, 3)  #aunque internamente esté en la posición (2, 2)
 * 5 (DIFÍCIL): Mostrar un símbolo para el jugador. Para ello, una solución es cambiar el código de la función imprimir_mapa_oculto()
 """
 
-import random
-from os import system, name
+import random, os
 
 DIMENSIONES = 5
 
@@ -113,10 +112,7 @@ COLUMNAS = 1
 CODIGO_OCULTO_PROGRAMADOR = "s"
 
 def clear():
-   if name == 'nt':
-    _ = system('cls')
-   else:
-    _ = system('clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def inicializar_juego() -> tuple:
     """
@@ -135,7 +131,7 @@ def posicion_inicial_del_jugador() -> tuple:
     """ Devuelve la posición inicial del jugador. Actualmente es la posición central del mapa.
     :return: La posición inicial del jugador.
     """
-    return DIMENSIONES // 2, DIMENSIONES // 2
+    return random.randint(0, DIMENSIONES - 1), random.randint(0, DIMENSIONES - 1)
 
 
 def generar_mapa(posicion_jugador) -> list:
